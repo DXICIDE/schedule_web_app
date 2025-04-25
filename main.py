@@ -1,9 +1,12 @@
 from schedule_item import *
 import datetime
-
+from sqlite_demo import *
 def main():
-    j = ScheduleItem("LOl", "LOL", datetime.datetime(2025, 4, 16, 13, 30, 45), datetime.datetime(2025, 4, 16, 13, 45, 45), 1, True, [1])
+    db = ScheduleDB()
+    db.c.execute("SELECT * FROM schedule_item")
+    print(db.c.fetchall())
+    print("it workds")
     
-    print(j)
+    
 if __name__ == "__main__":
     main()

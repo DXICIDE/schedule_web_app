@@ -1,23 +1,45 @@
 import sqlite3
-import json
+import json, datetime
+from schedule_item import ScheduleItem
 
-conn = sqlite3.connect("schedule_item.db")
+class ScheduleDB:
+    def __init__(self, db_name="schedule_item.db"):
+        self.conn = sqlite3.connect(db_name)
+        self.c = self.conn.cursor()
+        self.create_table()
 
-c = conn.cursor()
+    def create_table(self):
+        """Creates the schedule_item table if it doesn't exist"""
+        with self.conn:
+            self.c.execute("""
+                CREATE TABLE IF NOT EXISTS schedule_item (
+                    title TEXT NOT NULL,
+                    description TEXT,
+                    start_date TEXT NOT NULL,
+                    end_date TEXT NOT NULL,
+                    priority_level TEXT NOT NULL,
+                    repetition TEXT NOT NULL,
+                    repetition_days TEXT
+                )
+            """)
 
-c.execute("""CREATE TABLE schedule_item (
-            title text,
-            description text,
-            start_date text,
-            end_date text,
-            priority level text,
-            repetition text,
-            repetition_days text
-        )""")
+    def insert_item(self, item):
+        with self.conn:
+            self.c.execute("INSERT INTO schedule_item VALUES (?, ?, ?, ?, ?, ?, ?)", 
+                (item.title, 
+                item.description, 
+                item.start_date.isoformat(), 
+                item.end_date.isoformat(), 
+                item.priority_level.name, 
+                bool(item.repetition), 
+                json.dumps(item.repetition_days) if item.repetition else None
+                )
+            ) 
 
-repetition_days = [1]
-c.execute("INSERT INTO schedule_item VALUES ('Projekt do skoly', 'Projekt do nejakeho predmetu', '2025-04-16 13:30', '2025-04-16 13:45', 'High', True, '[1]')")
+    def delete_item(self, title):
+        with self.conn:
+            self.c.execute("DELETE from schedule_item WHERE title = ?", (title,))
 
-conn.commit()
-
-conn.close()
+if __name__ == "__main__":
+    db = ScheduleDB()
+    db.conn.close()

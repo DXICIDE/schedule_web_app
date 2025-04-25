@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+<div class="content">
+    <h1>Add an Event</h1>
+    <form action="/add" method="POST">
+        <p>Title</p>
+        <input type="text" id="title" name="title">
+        <p>Description</p>
+        <input type="text" id="description" name="description">
+        <p>Start date</p>
+        <input type="text" id="start_date" name="start_date">
+        <p>End date</p>
+        <input type="text" id="end_date" name="end_date">
+        <p>Priority Level</p>
+        <select id="priority_level" name="priority_level">
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+        </select>
+        
+        <p>Repetition</p>
+        <select id="Repetition" name="Repetition">
+            <option value="True">Yes</option>
+            <option value="False">No</option>
+        </select>
+
+        <p>Repetition Days</p>
+        <label for="Monday">Monday</label>
+        <input type="checkbox" id="Monday" name="Monday" value="0">
+        <label for="Monday">Tuesday</label>
+        <input type="checkbox" id="Tuesday" name="Tuesday" value="1">
+        <label for="Monday">Wednesday</label>
+        <input type="checkbox" id="Wednesday" name="Wednesday" value="2">
+        <label for="Monday">Thursday</label>
+        <input type="checkbox" id="Thursday" name="Thursday" value="3">
+        <label for="Monday">Friday</label>
+        <input type="checkbox" id="Friday" name="Friday" value="4">
+        <label for="Monday">Saturday</label>
+        <input type="checkbox" id="Saturday" name="Saturday" value="5">
+        <label for="Monday">Sunday</label>
+        <input type="checkbox" id="Sunday" name="Sunday" value="6">
+        
+        <input type="submit" value="Add Task">
+    </form>
+</div>
+{% endblock %}

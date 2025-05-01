@@ -1,13 +1,38 @@
-from flask import Flask, render_template, request, url_for, g, redirect
+from flask import Flask, render_template, request, url_for, g, redirect, jsonify
 from sqlite_demo import *
+from datetime import datetime
 
 app = Flask(__name__)
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 def get_db():
     """Get a thread-local database connection"""
     if 'db' not in g:
         g.db = ScheduleDB()
     return g.db
+
+def day_of_the_week(results):
+    days = {
+        0: [],  # Monday
+        1: [],  # Tuesday
+        2: [],  # Wednesday
+        3: [],  # Thursday
+        4: [],  # Friday
+        5: [],  # Saturday
+        6: []   # Sunday
+    }
+
+    for row in results:
+        dt = datetime.fromisoformat(row[2])
+        day_of_week = dt.weekday()
+        days[day_of_week].append(row)
+
+    ordered_results = []
+    for day in range(7):  # 0-6 for Monday-Sunday
+        ordered_results.extend(days[day])
+    
+    print(days)
+    return ordered_results
 
 @app.teardown_appcontext
 def close_db(e=None):
@@ -18,7 +43,10 @@ def close_db(e=None):
 
 @app.route('/')
 def main():
-    return render_template('index.html')
+    db = get_db()
+    db.c.execute("SELECT * FROM schedule_item ORDER BY start_time")
+    results = db.c.fetchall()
+    return render_template('index.html', results = results, datetime=datetime)
 
 @app.route('/add', methods=['POST', 'GET'])
 def add_schedule_item():
@@ -26,10 +54,9 @@ def add_schedule_item():
     if request.method == 'POST':
         title = request.form.get('title')
         description = request.form.get('description')
-        start_date = request.form.get('start_date')
-        end_date = request.form.get('end_date')
+        start_time = request.form.get('start_time')
+        end_time = request.form.get('end_time')
         priority_level = request.form.get('priority_level')
-        repetition = request.form.get('repetition')
         repetition_days = []
         days_mapping = {
             'Monday': 0,
@@ -45,16 +72,18 @@ def add_schedule_item():
                 repetition_days.append(days_mapping[day])
     else:
         return render_template('add.html')
+    start_time = datetime.strptime(start_time, '%H:%M').time()
+    end_time = datetime.strptime(end_time, '%H:%M').time()
 
     item = ScheduleItem(
         title,
         description,
-        datetime.datetime(2025, 4, 16, 13, 30, 45),
-        datetime.datetime(2025, 4, 16, 13, 45, 45),
+        start_time,
+        end_time,
         priority_level,
-        repetition,
         repetition_days
     )
+    
     try:
         db.insert_item(item)
         db.c.execute("SELECT * FROM schedule_item")
@@ -66,6 +95,5 @@ def add_schedule_item():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
 
     

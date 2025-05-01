@@ -15,24 +15,22 @@ class ScheduleDB:
                 CREATE TABLE IF NOT EXISTS schedule_item (
                     title TEXT NOT NULL,
                     description TEXT,
-                    start_date TEXT NOT NULL,
-                    end_date TEXT NOT NULL,
+                    start_time TEXT NOT NULL,
+                    end_time TEXT NOT NULL,
                     priority_level TEXT NOT NULL,
-                    repetition TEXT NOT NULL,
                     repetition_days TEXT
                 )
             """)
 
     def insert_item(self, item):
         with self.conn:
-            self.c.execute("INSERT INTO schedule_item VALUES (?, ?, ?, ?, ?, ?, ?)", 
+            self.c.execute("INSERT INTO schedule_item VALUES (?, ?, ?, ?, ?, ?)", 
                 (item.title, 
                 item.description, 
-                item.start_date.isoformat(), 
-                item.end_date.isoformat(), 
-                item.priority_level.name, 
-                bool(item.repetition), 
-                json.dumps(item.repetition_days) if item.repetition else None
+                item.start_time.isoformat(), 
+                item.end_time.isoformat(), 
+                item.priority_level.name,
+                json.dumps(item.repetition_days)
                 )
             ) 
 

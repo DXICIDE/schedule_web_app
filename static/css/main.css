@@ -1,4 +1,18 @@
-body {
-    margin: 0;
-    font-family: sans-serif;
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.schedule-table th, .schedule-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.event {
+    margin: 2px;
+    padding: 4px;
+    border-radius: 4px;
+    color: white;
+    font-size: 0.9em;
 }
